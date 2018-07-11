@@ -11,7 +11,7 @@
 </script>
 
 <style>
-  @import "../static/iconfont/iconfont.css";
+  @import "assets/iconfont/iconfont.css";
   html, #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     color: #2c3e50;

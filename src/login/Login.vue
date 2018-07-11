@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <header :class="{focus: onKeyboard}">
-      <i class="iconfont icon-2fanhui"></i>
+      <i class="iconfont icon-fanhui"></i>
       <span class="title">登录豆瓣</span>
     </header>
     <main>
@@ -16,7 +16,7 @@
         <button>登录</button>
       </div>
       <aside>
-        <span>注册豆瓣</span>
+        <span @click="toRegister">注册豆瓣</span>
         <span>忘记密码</span>
       </aside>
     </main>
@@ -47,7 +47,7 @@
       onBlur(value) {
 
       },
-      openKeyboard(){
+      openKeyboard() {
         const nowClientHeight = document.documentElement.clientHeight || document.body.clientHeight;
         if (this.clientHeight > nowClientHeight) {
           this.onKeyboard = true;
@@ -55,6 +55,9 @@
         else {
           this.onKeyboard = false;
         }
+      },
+      toRegister() {
+        this.$router.push({path: '/register'})
       }
 
     },
@@ -67,7 +70,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  @import '../../static/less/variables';
+  @import '../assets/less/variables';
 
   .login {
     background-color: #fff;
