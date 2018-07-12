@@ -7,11 +7,11 @@
     <main>
       <h1>欢迎加入豆瓣</h1>
       <div class="form">
-        <input type="text" placeholder="手机号 / 邮箱">
-        <input type="password" placeholder="密码（最少六位）">
-        <input type="text" placeholder="昵称">
+        <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
+        <input v-model="userInfo.password" type="password" placeholder="密码（最少六位）">
+        <input v-model="userInfo.nickname" type="text" placeholder="昵称">
       </div>
-      <button>下一步</button>
+      <button @click="submit">下一步</button>
       <aside>
         点击下一步代表你已阅读并同意<a href="#">用户使用协议</a>
       </aside>
@@ -20,14 +20,16 @@
 </template>
 
 <script>
+  import {validate} from '@/utils/validate'
+
   export default {
     name: 'Register',
     data() {
       return {
         userInfo: {
-          email: '',
+          username: '',
           password: '',
-          name: ''
+          nickname: ''
         }
       }
     },
@@ -38,6 +40,18 @@
       onBlur(value) {
 
       },
+      submit() {
+        Object.keys(this.userInfo).some(item => {
+          let meg = validate({
+            label: item,
+            value: this.userInfo[item]
+          });
+          console.log(meg);
+          return meg !== '';
+        });
+
+        console.log(this.userInfo)
+      }
 
 
     },
@@ -97,7 +111,7 @@
         border-bottom: 1px solid #ccc;
         outline: none;
 
-        &:last-child{
+        &:last-child {
           border-bottom: none;
         }
       }
@@ -116,7 +130,7 @@
       width: 100%;
       text-align: center;
       color: #999;
-      a{
+      a {
         color: #999;
       }
     }
