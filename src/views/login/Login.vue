@@ -70,7 +70,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  @import '../assets/less/variables';
+  @import '../../assets/less/variables';
 
   .login {
     background-color: #fff;

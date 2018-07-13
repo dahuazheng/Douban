@@ -5,55 +5,74 @@
       <span class="title">注册豆瓣</span>
     </header>
     <main>
-      <h1>欢迎加入豆瓣</h1>
-      <div class="form">
-        <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
-        <input v-model="userInfo.password" type="password" placeholder="密码（最少六位）">
-        <input v-model="userInfo.nickname" type="text" placeholder="昵称">
-      </div>
-      <button @click="submit">下一步</button>
-      <aside>
-        点击下一步代表你已阅读并同意<a href="#">用户使用协议</a>
-      </aside>
+      <section v-show="show=='register'">
+        <h1>欢迎加入豆瓣</h1>
+        <div class="form">
+          <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
+          <input v-model="userInfo.password" type="password" placeholder="密码（最少六位）">
+          <input v-model="userInfo.nickname" type="text" placeholder="昵称">
+        </div>
+        <button @click="submit">下一步</button>
+        <aside @click="toAccountValidate">
+          点击下一步代表你已阅读并同意<a href="#">用户使用协议</a>
+        </aside>
+      </section>
+      <section v-show="show=='account'">
+        <p>
+          <label>接收验证码的邮箱：</label>
+          <span>331743172@qq.com</span>
+        </p>
+      </section>
+      <AlertModal :class="{ active: showAlert }" :message="validateMsg"></AlertModal>
     </main>
   </div>
 </template>
 
 <script>
+  import AlertModal from '@/components/popup/AlertModal.vue'
   import {validate} from '@/utils/validate'
 
   export default {
     name: 'Register',
+    components: {
+      AlertModal
+    },
     data() {
       return {
         userInfo: {
           username: '',
           password: '',
           nickname: ''
-        }
+        },
+        validateMsg: '',
+        showAlert: false,
+        show: 'register'
       }
     },
     methods: {
-      onFocus(value) {
-
-      },
-      onBlur(value) {
-
-      },
       submit() {
         Object.keys(this.userInfo).some(item => {
-          let meg = validate({
+          this.validateMsg = validate({
             label: item,
             value: this.userInfo[item]
           });
-          console.log(meg);
-          return meg !== '';
+          return this.validateMsg !== '';
         });
-
-        console.log(this.userInfo)
+        if (this.validateMsg) {
+          this.closeAlert();
+          return true;
+        }
+        this.toAccountValidate();
+      },
+      closeAlert() {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.showAlert = false
+        }, 3000)
+      },
+      toAccountValidate() {
+        this.show = 'account'
       }
-
-
     },
     mounted() {
 
@@ -63,7 +82,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  @import '../assets/less/variables';
+  @import '../../assets/less/variables';
 
   .login {
     background-color: #fff;
