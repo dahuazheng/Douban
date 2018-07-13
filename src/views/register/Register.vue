@@ -5,7 +5,7 @@
       <span class="title">注册豆瓣</span>
     </header>
     <main>
-      <section v-show="show=='register'">
+      <section class="register" v-show="show=='register'">
         <h1>欢迎加入豆瓣</h1>
         <div class="form">
           <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
@@ -17,11 +17,16 @@
           点击下一步代表你已阅读并同意<a href="#">用户使用协议</a>
         </aside>
       </section>
-      <section v-show="show=='account'">
+      <section class="account" v-show="show=='account'">
         <p>
-          <label>接收验证码的邮箱：</label>
-          <span>331743172@qq.com</span>
+          <label>接收验证码的{{ usernameLabel }}：</label>
+          <span>{{ userInfo.username }}</span>
         </p>
+        <div class="input-box">
+          <input v-model="code" type="text" placeholder="验证码">
+          <span @click="getCode">获取验证码</span>
+        </div>
+        <button>提交</button>
       </section>
       <AlertModal :class="{ active: showAlert }" :message="validateMsg"></AlertModal>
     </main>
@@ -31,6 +36,8 @@
 <script>
   import AlertModal from '@/components/popup/AlertModal.vue'
   import {validate} from '@/utils/validate'
+  import {getCode} from '@/utils/utils'
+
 
   export default {
     name: 'Register',
@@ -44,9 +51,20 @@
           password: '',
           nickname: ''
         },
+        code: '',
         validateMsg: '',
         showAlert: false,
         show: 'register'
+      }
+    },
+    computed: {
+      usernameLabel() {
+        let reg = /^[0-9]+.?[0-9]*$/;
+        if (reg.test(this.userInfo.username)) {
+          return '手机'
+        } else {
+          return '邮箱'
+        }
       }
     },
     methods: {
@@ -72,6 +90,10 @@
       },
       toAccountValidate() {
         this.show = 'account'
+      },
+      getCode() {
+        let code = getCode(6);
+        console.log(code)
       }
     },
     mounted() {
@@ -111,47 +133,89 @@
     margin-left: 20px;
     margin-right: 20px;
 
-    h1 {
-      text-align: center;
-      color: @themColor;
-      font-weight: normal;
-    }
-    .form {
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      input {
-        width: 100%;
-        height: 36px;
-        box-sizing: border-box;
-        padding-left: 8px;
-        padding-right: 8px;
-        border: none;
-        border-bottom: 1px solid #ccc;
-        outline: none;
+    .register {
+      h1 {
+        text-align: center;
+        color: @themColor;
+        font-weight: normal;
+      }
+      .form {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        input {
+          width: 100%;
+          height: 36px;
+          box-sizing: border-box;
+          padding-left: 8px;
+          padding-right: 8px;
+          border: none;
+          border-bottom: 1px solid #ccc;
+          outline: none;
 
-        &:last-child {
-          border-bottom: none;
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+      button {
+        width: 100%;
+        height: 40px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 2px;
+        background-color: @themColor;
+        color: #fff;
+        outline: none;
+      }
+      aside {
+        width: 100%;
+        text-align: center;
+        color: #999;
+        a {
+          color: #999;
         }
       }
     }
-    button {
-      width: 100%;
-      height: 40px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 2px;
-      background-color: @themColor;
-      color: #fff;
-      outline: none;
-    }
-    aside {
-      width: 100%;
-      text-align: center;
-      color: #999;
-      a {
-        color: #999;
+    .account {
+      p {
+        color: #666;
+      }
+      .input-box {
+        position: relative;
+        width: 100%;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        height: 36px;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+
+        input {
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+          padding: 0 8px;
+          border: none;
+        }
+        span {
+          position: absolute;
+          top: 0;
+          right: 8px;
+          bottom: 0;
+          margin: auto;
+          line-height: 36px;
+          color: @themColor;
+        }
+      }
+      button {
+        width: 100%;
+        height: 36px;
+        border: none;
+        border-radius: 2px;
+        background-color: @themColor;
+        color: #fff;
       }
     }
+
   }
 </style>
