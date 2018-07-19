@@ -5,7 +5,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Mine from '@/views/mine/Mine'
 import Login from '@/views/user/Login'
 import Register from '@/views/user/Register'
-import AccountValidate from '@/views/user/AccountValidate'
+import FindPassword from '@/views/user/FindPassword'
 
 
 
@@ -31,6 +31,10 @@ export default new Router({
         { path: '/register/account-validate', component: AccountValidate},
         { path: '/mine/Register', component: Register}
       ]*/
+    },
+    {
+      path: '/find-password',
+      component: FindPassword,
     },
     {
       path: '/mine',

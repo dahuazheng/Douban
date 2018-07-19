@@ -13,7 +13,7 @@
       </div>
       <aside>
         <span @click="toRegister">注册豆瓣</span>
-        <span>忘记密码</span>
+        <span @click="toFindPassword">忘记密码</span>
       </aside>
     </main>
     <!--<footer>
@@ -57,6 +57,9 @@
       },
       toRegister() {
         this.$router.push({path: '/register'})
+      },
+      toFindPassword() {
+        this.$router.push({path: '/find-password'})
       },
       closeAlert() {
         this.showAlert = true;
