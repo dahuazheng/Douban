@@ -3,9 +3,9 @@ import Router from 'vue-router'
 
 import HelloWorld from '@/components/HelloWorld'
 import Mine from '@/views/mine/Mine'
-import Login from '@/views/login/Login'
-import Register from '@/views/register/Register'
-import AccountValidate from '@/views/register/AccountValidate'
+import Login from '@/views/user/Login'
+import Register from '@/views/user/Register'
+import AccountValidate from '@/views/user/AccountValidate'
 
 
 
