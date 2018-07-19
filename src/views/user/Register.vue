@@ -12,7 +12,7 @@
           <input v-model="userInfo.password" type="password" placeholder="密码（最少六位）">
           <input v-model="userInfo.nickname" type="text" placeholder="昵称">
         </div>
-        <button @click="submit">下一步</button>
+        <button @click="next">下一步</button>
         <aside @click="toAccountValidate">
           点击下一步代表你已阅读并同意<a href="#">用户使用协议</a>
         </aside>
@@ -23,10 +23,10 @@
           <span>{{ userInfo.username }}</span>
         </p>
         <div class="input-box">
-          <input v-model="code" type="text" placeholder="验证码">
+          <input v-model="userCode" type="text" placeholder="验证码">
           <span @click="getCode">获取验证码</span>
         </div>
-        <button>提交</button>
+        <button @click="submit">提交</button>
       </section>
       <AlertModal :class="{ active: showAlert }" :message="validateMsg"></AlertModal>
     </main>
@@ -37,7 +37,7 @@
   import AlertModal from '@/components/popup/AlertModal.vue'
   import {validate} from '@/utils/validate'
   import {getCode} from '@/utils/utils'
-
+  import {userRegister} from '@/utils/user'
 
   export default {
     name: 'Register',
@@ -51,10 +51,12 @@
           password: '',
           nickname: ''
         },
+        userCode: '',
         code: '',
         validateMsg: '',
         showAlert: false,
-        show: 'register'
+        show: 'register',
+        timeOut: 0
       }
     },
     computed: {
@@ -68,7 +70,7 @@
       }
     },
     methods: {
-      submit() {
+      next() {
         Object.keys(this.userInfo).some(item => {
           this.validateMsg = validate({
             label: item,
@@ -82,6 +84,27 @@
         }
         this.toAccountValidate();
       },
+      submit() {
+        this.validateMsg = validate({
+          label: 'code',
+          value: this.userCode
+        });
+        if (this.validateMsg) {
+          this.closeAlert();
+          return true;
+        }
+        if (this.code !== this.userCode) {
+          this.validateMsg = '验证码错误';
+          this.closeAlert();
+        } else {
+          userRegister(this.userInfo);
+          this.validateMsg = '注册成功，正在跳转';
+          this.closeAlert();
+          setTimeout(function () {
+            this.$router.push({path: '/login'})
+          }, 3000)
+        }
+      },
       closeAlert() {
         this.showAlert = true;
         setTimeout(() => {
@@ -92,8 +115,25 @@
         this.show = 'account'
       },
       getCode() {
-        let code = getCode(6);
-        console.log(code)
+        if (this.timeOut <= 0) {
+          this.code = getCode(6);
+          this.validateMsg = this.code;
+          this.timeOut = 60;
+          this.closeAlert();
+          this.codeStale()
+        } else {
+          this.validateMsg = this.code;
+          this.closeAlert();
+        }
+      },
+      codeStale() {
+        if (this.timeOut <= 0) {
+          return;
+        }
+        setTimeout(() => {
+          this.timeOut--;
+          this.codeStale()
+        }, 1000)
       }
     },
     mounted() {
@@ -216,6 +256,5 @@
         color: #fff;
       }
     }
-
   }
 </style>

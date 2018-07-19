@@ -7,13 +7,9 @@
     <main>
       <h1 v-show="!onKeyboard">欢迎来到豆瓣</h1>
       <div class="form">
-        <input @focus="onFocus('email')"
-               @blur="onBlur('email')"
-               type="text" placeholder="手机号/邮箱">
-        <input @focus="onFocus('password')"
-               @blur="onBlur('password')"
-               type="password" placeholder="密码">
-        <button>登录</button>
+        <input v-model="userInfo.username" type="text" placeholder="手机号/邮箱">
+        <input v-model="userInfo.password" type="password" placeholder="密码">
+        <button @click="submit">登录</button>
       </div>
       <aside>
         <span @click="toRegister">注册豆瓣</span>
@@ -24,42 +20,74 @@
       <span>微信登录</span>
       <span>微博登录</span>
     </footer>-->
+    <AlertModal :class="{ active: showAlert }" :message="validateMsg"></AlertModal>
   </div>
 </template>
 
 <script>
+  import AlertModal from '@/components/popup/AlertModal.vue'
+  import {validate} from '@/utils/validate'
+  import {userLogin} from '@/utils/user'
+
   export default {
     name: 'Login',
+    components: {
+      AlertModal
+    },
     data() {
       return {
         userInfo: {
-          email: '',
+          username: '',
           password: ''
         },
         onKeyboard: false,
         clientHeight: 0,
+        validateMsg: '',
+        showAlert: false
       }
     },
     methods: {
-      onFocus(value) {
-
-      },
-      onBlur(value) {
-
-      },
       openKeyboard() {
         const nowClientHeight = document.documentElement.clientHeight || document.body.clientHeight;
         if (this.clientHeight > nowClientHeight) {
           this.onKeyboard = true;
-        }
-        else {
+        } else {
           this.onKeyboard = false;
         }
       },
       toRegister() {
         this.$router.push({path: '/register'})
+      },
+      closeAlert() {
+        this.showAlert = true;
+        setTimeout(() => {
+          this.showAlert = false
+        }, 3000)
+      },
+      submit() {
+        Object.keys(this.userInfo).some(item => {
+          this.validateMsg = validate({
+            label: item,
+            value: this.userInfo[item]
+          });
+          return this.validateMsg !== '';
+        });
+        if (this.validateMsg) {
+          this.closeAlert();
+          return true;
+        }
+        let res = userLogin(this.userInfo);
+        this.validateMsg = res.message;
+        this.closeAlert();
+        let self = this;
+        if(res.status ===1){
+          setTimeout(function () {
+            self.$router.push({path: '/'})
+          },3000)
+        }
+        let users = JSON.parse(localStorage.getItem('users'));
+        console.log(users)
       }
-
     },
     mounted() {
       this.clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
