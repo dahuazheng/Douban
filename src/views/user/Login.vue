@@ -59,7 +59,7 @@
         this.$router.push({path: '/register'})
       },
       toFindPassword() {
-        this.$router.push({path: '/find-password'})
+        this.$router.push({path: '/find-password', query: {username: this.userInfo.username}})
       },
       closeAlert() {
         this.showAlert = true;
@@ -83,10 +83,10 @@
         this.validateMsg = res.message;
         this.closeAlert();
         let self = this;
-        if(res.status ===1){
+        if (res.status === 1) {
           setTimeout(function () {
             self.$router.push({path: '/'})
-          },3000)
+          }, 3000)
         }
         let users = JSON.parse(localStorage.getItem('users'));
         console.log(users)

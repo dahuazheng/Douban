@@ -5,7 +5,6 @@
       <span class="title">找回密码</span>
     </header>
     <main>
-
       <div class="form">
         <div class="input-box">
           <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
@@ -14,14 +13,19 @@
           <input v-model="userCode" type="text" placeholder="验证码">
           <span @click="getCode">获取验证码</span>
         </div>
-        <button @click="next">提交</button>
       </div>
+      <button @click="next">下一步</button>
     </main>
+    <AlertModal :class="{ active: alertModal.show }" :message="alertModal.msg"></AlertModal>
   </div>
 
 </template>
 
 <script>
+  import AlertModal from '@/components/popup/AlertModal.vue'
+  import {validate} from '@/utils/validate'
+  import {getCode} from '@/utils/utils'
+
   export default {
     name: 'FindPassword',
     data() {
@@ -29,15 +33,66 @@
         userInfo: {
           username: ''
         },
-        userCode: ''
+        userCode: '',
+        code: '',
+        alertModal: {
+          show: false,
+          msg: ''
+        },
+        timeCount: 0
       }
+    },
+    components: {
+      AlertModal
     },
     methods: {
       getCode() {
-
+        if (this.timeCount <= 0) {
+          this.code = getCode(6);
+          this.timeCount = 60;
+          this.openAlert(this.code);
+          this.codeStale()
+        } else {
+          this.openAlert(this.code);
+        }
       },
       next() {
-
+        Object.keys(this.userInfo).some(item => {
+          this.alertModal.msg = validate({
+            label: item,
+            value: this.userInfo[item]
+          });
+          return this.alertModal.msg !== '';
+        });
+        if (this.alertModal.msg) {
+          this.openAlert();
+          return true;
+        }
+        //this.$router.push({path: '/find-password', query: {username: this.userInfo.username}})
+      },
+      openAlert(message) {
+        message = String(message);
+        if (message === '') return;
+        this.alertModal.msg = message;
+        this.alertModal.show = true;
+        setTimeout(() => {
+          this.alertModal.show = false
+        }, 3000)
+      },
+      codeStale() {
+        if (this.timeCount <= 0) {
+          return;
+        }
+        setTimeout(() => {
+          this.timeCount--;
+          this.codeStale()
+        }, 1000)
+      }
+    },
+    mounted() {
+      let query = this.$route.query;
+      if (query) {
+        this.userInfo.username = query.username;
       }
     }
   }
@@ -65,16 +120,23 @@
     }
   }
 
-  .find-password {
+  main {
+    margin: 20px;
+
+    .form {
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+    }
     .input-box {
       position: relative;
       width: 100%;
-      margin-bottom: 15px;
       box-sizing: border-box;
       height: 36px;
-      border: 1px solid #ccc;
-      border-radius: 2px;
 
+      &:first-child {
+        border-bottom: 1px solid #ccc;
+      }
       input {
         width: 100%;
         height: 100%;
