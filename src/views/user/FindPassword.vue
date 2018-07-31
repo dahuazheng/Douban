@@ -5,16 +5,24 @@
       <span class="title">找回密码</span>
     </header>
     <main>
-      <div class="form">
-        <div class="input-box">
-          <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
+      <div>
+        <div class="form">
+          <div class="input-box">
+            <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
+          </div>
+          <div class="input-box">
+            <input v-model="userCode" type="text" placeholder="验证码">
+            <span @click="getCode">{{codeBtnMeg}}</span>
+          </div>
         </div>
-        <div class="input-box">
-          <input v-model="userCode" type="text" placeholder="验证码">
-          <span @click="getCode">获取验证码</span>
-        </div>
+        <button @click="next">下一步</button>
       </div>
-      <button @click="next">下一步</button>
+      <div>
+        <div class="reset-input">
+          <input v-model="userInfo.password" type="password" placeholder="请输入新密码">
+        </div>
+        <button @click="next">重置密码</button>
+      </div>
     </main>
     <AlertModal :class="{ active: alertModal.show }" :message="alertModal.msg"></AlertModal>
   </div>
@@ -31,10 +39,12 @@
     data() {
       return {
         userInfo: {
-          username: ''
+          username: '',
+          password: ''
         },
         userCode: '',
         code: '',
+        codeBtnMeg: '获取验证码',
         alertModal: {
           show: false,
           msg: ''
@@ -57,18 +67,18 @@
         }
       },
       next() {
+        let self = this;
         Object.keys(this.userInfo).some(item => {
           this.alertModal.msg = validate({
             label: item,
-            value: this.userInfo[item]
+            value: self.userInfo[item]
           });
           return this.alertModal.msg !== '';
         });
         if (this.alertModal.msg) {
-          this.openAlert();
+          this.openAlert(this.alertModal.msg);
           return true;
         }
-        //this.$router.push({path: '/find-password', query: {username: this.userInfo.username}})
       },
       openAlert(message) {
         message = String(message);
@@ -81,10 +91,12 @@
       },
       codeStale() {
         if (this.timeCount <= 0) {
+          this.codeBtnMeg = '获取验证码';
           return;
         }
         setTimeout(() => {
           this.timeCount--;
+          this.codeBtnMeg = this.timeCount + 's后重新获取';
           this.codeStale()
         }, 1000)
       }
@@ -152,6 +164,23 @@
         margin: auto;
         line-height: 36px;
         color: @themColor;
+      }
+    }
+    .reset-input{
+      margin-bottom: 15px;
+      position: relative;
+      width: 100%;
+      box-sizing: border-box;
+      height: 36px;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+
+      input {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 0 8px;
+        border: none;
       }
     }
     button {
