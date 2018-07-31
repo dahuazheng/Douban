@@ -37,3 +37,33 @@ export function userLogin(userInfo) {
   });
   return data
 }
+
+export function setUserCode(code) {
+  localStorage.setItem('userCode', JSON.stringify(code));
+}
+
+export function userFindPassword(userInfo, code) {
+  let serverCode = JSON.parse(localStorage.getItem('userCode'));
+
+  let user = users.filter((user) => {
+    return userInfo.username === user.username
+  })[0];
+
+  if(!user){
+    return {
+      status: -2,
+      message: '用户不存在'
+    }
+  }
+  if (code !== serverCode) {
+    return {
+      status: -1,
+      message: '验证码不正确'
+    }
+  } else {
+    return {
+      status: 1,
+      message: '确认成功'
+    }
+  }
+}

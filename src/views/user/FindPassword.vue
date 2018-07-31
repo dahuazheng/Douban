@@ -33,6 +33,7 @@
   import AlertModal from '@/components/popup/AlertModal.vue'
   import {validate} from '@/utils/validate'
   import {getCode} from '@/utils/utils'
+  import {setUserCode} from '@/utils/user'
 
   export default {
     name: 'FindPassword',
@@ -59,6 +60,7 @@
       getCode() {
         if (this.timeCount <= 0) {
           this.code = getCode(6);
+          setUserCode(this.code);
           this.timeCount = 60;
           this.openAlert(this.code);
           this.codeStale()
@@ -166,7 +168,7 @@
         color: @themColor;
       }
     }
-    .reset-input{
+    .reset-input {
       margin-bottom: 15px;
       position: relative;
       width: 100%;
