@@ -4,6 +4,15 @@ export function userRegister(userInfo) {
   if (!users) {
     users = []
   }
+  let user = users.filter((user) => {
+    return userInfo.username === user.username
+  })[0];
+  if (user) {
+    return {
+      status: -2,
+      message: '用户已存在'
+    }
+  }
   users.push(userInfo);
   localStorage.setItem('users', JSON.stringify(users));
 }
@@ -42,14 +51,14 @@ export function setUserCode(code) {
   localStorage.setItem('userCode', JSON.stringify(code));
 }
 
-export function userFindPassword(userInfo, code) {
+export function userFindPassword(username, code) {
   let serverCode = JSON.parse(localStorage.getItem('userCode'));
 
   let user = users.filter((user) => {
-    return userInfo.username === user.username
+    return username === user.username
   })[0];
 
-  if(!user){
+  if (!user) {
     return {
       status: -2,
       message: '用户不存在'
@@ -64,6 +73,30 @@ export function userFindPassword(userInfo, code) {
     return {
       status: 1,
       message: '确认成功'
+    }
+  }
+}
+
+export function userResetPassword(username, password) {
+  let reset = false;
+
+  users.forEach((user) => {
+    if (username === user.username) {
+      user.password = password;
+      reset = true;
+    }
+  });
+
+  if (reset) {
+    localStorage.setItem('users', JSON.stringify(users));
+    return {
+      status: 1,
+      message: '确认成功'
+    }
+  } else {
+    return {
+      status: -1,
+      message: '修改密码失败，请重试'
     }
   }
 }

@@ -2,12 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import HelloWorld from '@/components/HelloWorld'
-import Mine from '@/views/mine/Mine'
+import UserCenter from '@/views/user/Home'
 import Login from '@/views/user/Login'
 import Register from '@/views/user/Register'
 import FindPassword from '@/views/user/FindPassword'
-
-
 
 Vue.use(Router)
 
@@ -37,8 +35,9 @@ export default new Router({
       component: FindPassword,
     },
     {
-      path: '/mine',
-      component: Mine,
+      path: '/user-center',
+      name: 'UserCenter',
+      component: UserCenter,
     },
   ]
 })

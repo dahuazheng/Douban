@@ -85,6 +85,7 @@
         this.toAccountValidate();
       },
       submit() {
+        let self = this;
         this.validateMsg = validate({
           label: 'code',
           value: this.userCode
@@ -97,11 +98,16 @@
           this.validateMsg = '验证码错误';
           this.closeAlert();
         } else {
-          userRegister(this.userInfo);
+          let res = userRegister(this.userInfo);
+          if (res.status <= 0) {
+            this.validateMsg = res.message;
+            this.closeAlert();
+            return
+          }
           this.validateMsg = '注册成功，正在跳转';
           this.closeAlert();
           setTimeout(function () {
-            this.$router.push({path: '/login'})
+            self.$router.push({path: '/login'})
           }, 3000)
         }
       },
@@ -135,9 +141,6 @@
           this.codeStale()
         }, 1000)
       }
-    },
-    mounted() {
-
     },
   }
 </script>

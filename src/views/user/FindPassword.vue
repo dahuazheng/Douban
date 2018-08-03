@@ -5,10 +5,10 @@
       <span class="title">找回密码</span>
     </header>
     <main>
-      <div>
+      <div v-show="pageShow==='find'">
         <div class="form">
           <div class="input-box">
-            <input v-model="userInfo.username" type="text" placeholder="手机号 / 邮箱">
+            <input v-model="username" type="text" placeholder="手机号 / 邮箱">
           </div>
           <div class="input-box">
             <input v-model="userCode" type="text" placeholder="验证码">
@@ -17,11 +17,11 @@
         </div>
         <button @click="next">下一步</button>
       </div>
-      <div>
+      <div v-show="pageShow==='reset'">
         <div class="reset-input">
-          <input v-model="userInfo.password" type="password" placeholder="请输入新密码">
+          <input v-model="password" type="password" placeholder="请输入新密码">
         </div>
-        <button @click="next">重置密码</button>
+        <button @click="reset">重置密码</button>
       </div>
     </main>
     <AlertModal :class="{ active: alertModal.show }" :message="alertModal.msg"></AlertModal>
@@ -33,16 +33,14 @@
   import AlertModal from '@/components/popup/AlertModal.vue'
   import {validate} from '@/utils/validate'
   import {getCode} from '@/utils/utils'
-  import {setUserCode} from '@/utils/user'
+  import {setUserCode, userFindPassword, userResetPassword} from '@/utils/user'
 
   export default {
     name: 'FindPassword',
     data() {
       return {
-        userInfo: {
-          username: '',
-          password: ''
-        },
+        username: '',
+        password: '',
         userCode: '',
         code: '',
         codeBtnMeg: '获取验证码',
@@ -50,7 +48,8 @@
           show: false,
           msg: ''
         },
-        timeCount: 0
+        timeCount: 0,
+        pageShow: 'find'
       }
     },
     components: {
@@ -70,16 +69,46 @@
       },
       next() {
         let self = this;
-        Object.keys(this.userInfo).some(item => {
-          this.alertModal.msg = validate({
-            label: item,
-            value: self.userInfo[item]
-          });
-          return this.alertModal.msg !== '';
+        this.alertModal.msg = validate({
+          label: 'username',
+          value: self.username
         });
         if (this.alertModal.msg) {
           this.openAlert(this.alertModal.msg);
           return true;
+        }
+        this.alertModal.msg = validate({
+          label: 'code',
+          value: self.userCode
+        });
+        if (this.alertModal.msg) {
+
+          return true;
+        }
+        let res = userFindPassword(this.username, this.code);
+        if (res.status > 0) {
+          this.pageShow = 'reset';
+        } else {
+          this.openAlert(res.message);
+          console.log(res);
+        }
+      },
+      reset() {
+        let self = this;
+        this.alertModal.msg = validate({
+          label: 'password',
+          value: self.password
+        });
+        if (this.alertModal.msg) {
+          this.openAlert(this.alertModal.msg);
+          return true;
+        }
+        let res = userResetPassword(this.username, this.password);
+        if (res.status > 0) {
+          self.$router.push({path: '/'})
+        } else {
+          this.openAlert(res.message);
+          console.log(res);
         }
       },
       openAlert(message) {
@@ -106,7 +135,7 @@
     mounted() {
       let query = this.$route.query;
       if (query) {
-        this.userInfo.username = query.username;
+        this.username = query.username;
       }
     }
   }
